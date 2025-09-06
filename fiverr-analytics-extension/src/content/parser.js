@@ -46,6 +46,15 @@
     try { return el.getAttribute(name); } catch (_) { return null; }
   }
 
+  function findPriceElementWithin(root) {
+    const candidates = root.querySelectorAll('[data-qa="gig-price"], [data-qa="package-price"], .price, .gig-price, bdi, span, strong');
+    for (const el of candidates) {
+      const txt = textContent(el);
+      if (/\$\s*\d/.test(txt)) return el;
+    }
+    return null;
+  }
+
   function parseGigCard(card) {
     const titleEl = queryFirst(card, [
       'h3 a[href*="/gig/"]',
@@ -77,9 +86,8 @@
       '[data-qa="gig-price"]',
       '[aria-label*="price" i]',
       '.price',
-      '.gig-price',
-      'span:has(> bdi)'
-    ]);
+      '.gig-price'
+    ]) || findPriceElementWithin(card);
     const priceText = textContent(priceEl);
     const price = parsePrice(priceText);
 
@@ -93,28 +101,25 @@
   }
 
   function parseSearchResults(doc) {
-    const containers = queryAll(doc, [
-      '[data-qa="search-results"]',
-      'ol, ul'
-    ]);
-    let cards = [];
-    for (const container of containers) {
-      const found = queryAll(container, [
-        'li:has(a[href*="/gig/"])',
-        'div:has(a[href*="/gig/"])'
-      ]);
-      if (found.length) cards = cards.concat(found);
+    const anchors = Array.from(doc.querySelectorAll('a[href*="/gig/"]'));
+    const seen = new Set();
+    const cards = [];
+    for (const a of anchors) {
+      // Ignore overlay links
+      if (a.closest('#fiverr-analytics-overlay-root')) continue;
+      const card = a.closest('li, article, div');
+      if (!card) continue;
+      if (seen.has(card)) continue;
+      seen.add(card);
+      cards.push(card);
     }
-    // De-duplicate
-    const unique = Array.from(new Set(cards));
-    const gigs = unique.map(parseGigCard).filter(g => g.title || g.url);
+    const gigs = cards.map(parseGigCard).filter(g => g.title || g.url);
     return { type: 'search', gigs };
   }
 
   function parseGigPage(doc) {
     const title = textContent(queryFirst(doc, [
       'h1[data-qa="gig-title"]',
-      'h1:has(span)',
       'h1'
     ]));
     const seller = textContent(queryFirst(doc, [

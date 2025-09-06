@@ -35,12 +35,12 @@
   const observer = new MutationObserver(debounce(() => {
     if (!state.enabled || !state.autoUpdate) return;
     updateData();
-  }, 500));
+  }, 800));
 
   function start() {
     FiverrOverlay.ensure();
     updateData();
-    observer.observe(document.documentElement || document.body, { subtree: true, childList: true });
+    observer.observe(document.body || document.documentElement, { subtree: true, childList: true });
   }
 
   function stop() {
@@ -74,6 +74,27 @@
   // Refresh event from overlay
   window.addEventListener('fiverr-analytics-refresh', () => {
     updateData();
+  });
+
+  // SPA URL change detection (History API + popstate)
+  (function patchHistory() {
+    const originalPush = history.pushState;
+    const originalReplace = history.replaceState;
+    function emitChange() {
+      window.dispatchEvent(new Event('fiverr-analytics-url-changed'));
+    }
+    history.pushState = function(...args) { const r = originalPush.apply(this, args); emitChange(); return r; };
+    history.replaceState = function(...args) { const r = originalReplace.apply(this, args); emitChange(); return r; };
+    window.addEventListener('popstate', emitChange);
+  })();
+
+  let urlChangeTimer = null;
+  window.addEventListener('fiverr-analytics-url-changed', () => {
+    clearTimeout(urlChangeTimer);
+    urlChangeTimer = setTimeout(() => {
+      if (!state.enabled) return;
+      updateData();
+    }, 300);
   });
 })();
 
