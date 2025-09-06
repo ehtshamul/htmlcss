@@ -221,17 +221,16 @@ class FiverrDataFetcher {
             const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
             const activeTab = tabs[0];
 
-            if (activeTab && activeTab.url.includes('fiverr.com')) {
-                // If user is on Fiverr, use content script
+            if (activeTab && activeTab.url && activeTab.url.includes('fiverr.com')) {
+                // Fiverr-only: use on-page content script
                 return await this.scrapeFromContentScript(keyword, activeTab.id);
-            } else {
-                // Otherwise, fetch data directly
-                return await this.fetchGigData(keyword);
             }
+            // Enforce Fiverr-only behavior
+            return { gigs: [], keyword, totalResults: 0, error: 'Please open a Fiverr search page to analyze in real time.' };
         } catch (error) {
             console.error('Search error:', error);
-            // Fallback to direct fetch
-            return await this.fetchGigData(keyword);
+            // Fiverr-only: do not fall back to non-Fiverr sources
+            return { gigs: [], keyword, totalResults: 0, error: 'Analysis failed. Open a Fiverr search page and try again.' };
         }
     }
 
@@ -246,12 +245,12 @@ class FiverrDataFetcher {
             if (response && response.gigs) {
                 return response;
             }
-
-            // Fallback to direct fetch
-            return await this.fetchGigData(keyword);
+            // Fiverr-only: no fallback
+            return { gigs: [], keyword, totalResults: 0, error: 'No gigs found on the current Fiverr page.' };
         } catch (error) {
             console.error('Content script scrape error:', error);
-            return await this.fetchGigData(keyword);
+            // Fiverr-only: no fallback
+            return { gigs: [], keyword, totalResults: 0, error: 'Could not scrape the Fiverr page. Try refreshing the page.' };
         }
     }
 
