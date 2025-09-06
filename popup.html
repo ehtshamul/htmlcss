@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fiverr Keyword Insight AI</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <!-- Header with Real-time Status -->
+    <div class="header">
+      <div class="header-content">
+        <div class="header-title">
+          <h1>🚀 Fiverr Keyword Insight AI</h1>
+          <div class="real-time-indicator" id="realTimeIndicator">
+            <span class="status-dot"></span>
+            <span class="status-text">Live</span>
+          </div>
+        </div>
+        <div class="header-stats">
+          <div class="mini-stat">
+            <span class="mini-stat-value" id="totalSearches">0</span>
+            <span class="mini-stat-label">Searches</span>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-stat-value" id="lastUpdate">--:--</span>
+            <span class="mini-stat-label">Updated</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enhanced Search Section -->
+    <div class="search-section">
+      <div class="search-container">
+        <div class="search-input-group">
+          <input type="text" id="keywordInput" placeholder="Enter keyword (e.g., logo design, web development)" autocomplete="off">
+          <button id="searchBtn" class="search-btn">
+            <span class="btn-icon">🔍</span>
+            <span class="btn-text">Analyze</span>
+          </button>
+        </div>
+        
+        <!-- Real-time Suggestions -->
+        <div class="suggestions-container" id="suggestionsContainer" style="display: none;">
+          <div class="suggestions-header">
+            <span class="suggestions-title">💡 Smart Suggestions</span>
+            <span class="suggestions-count" id="suggestionsCount">0</span>
+          </div>
+          <div class="suggestions-list" id="suggestionsList"></div>
+        </div>
+
+        <!-- Trending Keywords -->
+        <div class="trending-keywords" id="trendingKeywords" style="display: none;">
+          <div class="trending-header">
+            <span class="trending-title">📈 Trending Now</span>
+            <button class="refresh-trending" id="refreshTrending">🔄</button>
+          </div>
+          <div class="trending-list" id="trendingList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <button id="exportBtn" class="action-btn export-btn" disabled>
+        <span class="btn-icon">📊</span>
+        <span class="btn-text">Export</span>
+      </button>
+      <button id="favoriteBtn" class="action-btn favorite-btn" disabled>
+        <span class="btn-icon">⭐</span>
+        <span class="btn-text">Save</span>
+      </button>
+      <button id="refreshBtn" class="action-btn refresh-btn" disabled>
+        <span class="btn-icon">🔄</span>
+        <span class="btn-text">Refresh</span>
+      </button>
+      <button id="overlayBtn" class="action-btn overlay-btn">
+        <span class="btn-icon">👁️</span>
+        <span class="btn-text">Overlay</span>
+      </button>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results" id="resultsContainer" style="display: none;">
+      <!-- Enhanced Overview -->
+      <div class="overview-section">
+        <div class="section-header">
+          <h3>📊 Market Overview</h3>
+          <div class="data-freshness">
+            <span class="freshness-indicator" id="dataFreshness"></span>
+            <span class="freshness-text">Real-time data</span>
+          </div>
+        </div>
+        
+        <div class="stats-grid">
+          <div class="stat-card primary">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-content">
+              <span class="stat-value" id="totalGigs">0</span>
+              <span class="stat-label">Total Gigs</span>
+            </div>
+          </div>
+          <div class="stat-card secondary">
+            <div class="stat-icon">⚡</div>
+            <div class="stat-content">
+              <span class="stat-value" id="competitionLevel">-</span>
+              <span class="stat-label">Competition</span>
+            </div>
+          </div>
+          <div class="stat-card success">
+            <div class="stat-icon">💰</div>
+            <div class="stat-content">
+              <span class="stat-value" id="avgPrice">$0</span>
+              <span class="stat-label">Avg Price</span>
+            </div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-content">
+              <span class="stat-value" id="avgRating">0.0</span>
+              <span class="stat-label">Avg Rating</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Insights -->
+      <div class="ai-insights" id="aiInsights" style="display: none;">
+        <div class="section-header">
+          <h3>🤖 AI Market Insights</h3>
+          <div class="insight-confidence">
+            <span class="confidence-score" id="confidenceScore">95%</span>
+            <span class="confidence-label">Confidence</span>
+          </div>
+        </div>
+        <div class="insights-grid" id="insightsGrid"></div>
+      </div>
+
+      <!-- Competition Analysis -->
+      <div class="competition-analysis" id="competitionAnalysis" style="display: none;">
+        <div class="section-header">
+          <h3>🏆 Competition Analysis</h3>
+          <div class="competition-score">
+            <span class="score-value" id="competitionScore">0</span>
+            <span class="score-label">Score</span>
+          </div>
+        </div>
+        <div class="competition-details" id="competitionDetails"></div>
+      </div>
+
+      <!-- Opportunity Keywords -->
+      <div class="opportunity-keywords" id="opportunityKeywords" style="display: none;">
+        <div class="section-header">
+          <h3>🎯 Opportunity Keywords</h3>
+          <div class="opportunity-count">
+            <span class="count-value" id="opportunityCount">0</span>
+            <span class="count-label">Found</span>
+          </div>
+        </div>
+        <div class="keywords-grid" id="keywordsGrid"></div>
+      </div>
+
+      <!-- Enhanced Charts -->
+      <div class="charts-section">
+        <div class="chart-container">
+          <div class="chart-header">
+            <h4>📈 Seller Level Distribution</h4>
+            <div class="chart-controls">
+              <button class="chart-btn active" data-chart="levels">Levels</button>
+              <button class="chart-btn" data-chart="ratings">Ratings</button>
+            </div>
+          </div>
+          <canvas id="sellerLevelsChart" width="320" height="200"></canvas>
+        </div>
+        
+        <div class="chart-container">
+          <div class="chart-header">
+            <h4>💰 Price Analysis</h4>
+            <div class="chart-controls">
+              <button class="chart-btn active" data-chart="price">Price</button>
+              <button class="chart-btn" data-chart="revenue">Revenue</button>
+            </div>
+          </div>
+          <canvas id="priceChart" width="320" height="200"></canvas>
+        </div>
+      </div>
+
+      <!-- Top Performing Gigs -->
+      <div class="gigs-section">
+        <div class="section-header">
+          <h3>🏆 Top Performing Gigs</h3>
+          <div class="gigs-controls">
+            <select id="gigsSort" class="sort-select">
+              <option value="relevance">Relevance</option>
+              <option value="price">Price</option>
+              <option value="rating">Rating</option>
+              <option value="reviews">Reviews</option>
+            </select>
+          </div>
+        </div>
+        <div class="gigs-list" id="gigsList"></div>
+        <div class="load-more-container">
+          <button id="loadMoreBtn" class="load-more-btn">Load More Gigs</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enhanced Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <!-- Favorites -->
+      <div class="sidebar-section favorites-section" id="favoritesSection" style="display: none;">
+        <div class="sidebar-header">
+          <h4>⭐ Saved Keywords</h4>
+          <button class="clear-favorites" id="clearFavorites">Clear All</button>
+        </div>
+        <div class="favorites-list" id="favoritesList"></div>
+      </div>
+      
+      <!-- Search History -->
+      <div class="sidebar-section history-section" id="historySection" style="display: none;">
+        <div class="sidebar-header">
+          <h4>📝 Recent Searches</h4>
+          <button class="clear-history" id="clearHistory">Clear</button>
+        </div>
+        <div class="history-list" id="historyList"></div>
+      </div>
+
+      <!-- Market Trends -->
+      <div class="sidebar-section trends-section" id="trendsSection" style="display: none;">
+        <div class="sidebar-header">
+          <h4>📊 Market Trends</h4>
+          <button class="refresh-trends" id="refreshTrends">🔄</button>
+        </div>
+        <div class="trends-list" id="trendsList"></div>
+      </div>
+    </div>
+
+    <!-- Loading States -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+      <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">
+          <h4>Analyzing Fiverr Data...</h4>
+          <p id="loadingStatus">Fetching real-time data</p>
+        </div>
+        <div class="loading-progress">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enhanced Error Messages -->
+    <div class="error-container" id="errorContainer" style="display: none;">
+      <div class="error-content">
+        <div class="error-icon">⚠️</div>
+        <div class="error-text">
+          <h4 id="errorTitle">Error</h4>
+          <p id="errorMessage">Something went wrong</p>
+        </div>
+        <button class="error-retry" id="errorRetry">Retry</button>
+      </div>
+    </div>
+
+    <!-- Success Notifications -->
+    <div class="success-container" id="successContainer" style="display: none;">
+      <div class="success-content">
+        <div class="success-icon">✅</div>
+        <div class="success-text">
+          <h4 id="successTitle">Success</h4>
+          <p id="successMessage">Operation completed</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="chart.min.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

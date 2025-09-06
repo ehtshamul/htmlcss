@@ -1,0 +1,50 @@
+{
+  "manifest_version": 3,
+  "name": "Fiverr Keyword Insight AI",
+  "version": "2.0.0",
+  "description": "Advanced Fiverr keyword research tool with real-time data, competition analysis, and AI-powered insights for finding profitable gig opportunities",
+  
+  "permissions": [
+    "activeTab",
+    "storage",
+    "tabs",
+    "scripting",
+    "alarms",
+    "notifications"
+  ],
+  
+  "host_permissions": [
+    "https://www.fiverr.com/*",
+    "https://api.fiverr.com/*",
+    "https://*.fiverr.com/*"
+  ],
+  
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Fiverr Keyword Insight AI"
+  },
+  
+  "background": {
+    "service_worker": "background.js"
+  },
+  
+  "content_scripts": [
+    {
+      "matches": ["https://www.fiverr.com/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_end"
+    }
+  ],
+  
+  "web_accessible_resources": [
+    {
+      "resources": ["chart.min.js", "styles.css", "icons/*"],
+      "matches": ["https://www.fiverr.com/*"]
+    }
+  ],
+  
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://www.fiverr.com https://api.fiverr.com"
+  }
+}
