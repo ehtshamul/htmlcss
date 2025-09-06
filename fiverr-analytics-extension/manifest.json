@@ -1,0 +1,38 @@
+{
+  "name": "Fiverr Analytics Overlay",
+  "description": "Overlay on Fiverr pages to parse gigs, compute keyword analytics, show charts, and export data.",
+  "version": "0.1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_title": "Fiverr Analytics",
+    "default_popup": "src/popup/popup.html"
+  },
+  "permissions": [
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://www.fiverr.com/*"
+  ],
+  "background": {
+    "service_worker": "src/background/service_worker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.fiverr.com/*"
+      ],
+      "js": [
+        "src/content/parser.js",
+        "src/content/analytics.js",
+        "src/content/charts.js",
+        "src/content/exporter.js",
+        "src/content/overlay.js",
+        "src/content/content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
+
