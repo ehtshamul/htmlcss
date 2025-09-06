@@ -17,6 +17,9 @@ class FiverrContentScript {
     if (this.isSearchPage()) {
       this.setupSearchPageFeatures();
     }
+
+    // Watch for SPA navigations and dynamic updates
+    this.installMutationObserver();
   }
 
   handleMessage(request, sender, sendResponse) {
@@ -576,14 +579,53 @@ class FiverrContentScript {
   }
 
   autoAnalyzePage() {
-    // Automatically show overlay with current page data
+    // Automatically analyze current page data and fallback to background fetch if needed
     const keyword = this.extractCurrentKeyword();
     const data = this.scrapeCurrentPage(keyword);
-    
+
     if (data.gigs.length > 0) {
-      // Show small notification that analysis is available
       this.showAnalysisNotification(data);
+      return;
     }
+
+    // Fallback: ask background to fetch/parse if local scrape failed
+    chrome.runtime.sendMessage({ action: 'analyzeKeyword', keyword }, (response) => {
+      if (response && response.data && Array.isArray(response.data.gigs) && response.data.gigs.length > 0) {
+        this.showAnalysisNotification(response.data);
+      }
+    });
+  }
+
+  installMutationObserver() {
+    if (this._observerInstalled) return;
+    this._observerInstalled = true;
+
+    const debouncedRescan = this.debounce(() => {
+      if (!this.isSearchPage()) return;
+      const keyword = this.extractCurrentKeyword();
+      const data = this.scrapeCurrentPage(keyword);
+      if (this.isOverlayVisible && this.overlay) {
+        this.updateOverlayContent(this.overlay, data);
+      }
+    }, 800);
+
+    const observer = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.addedNodes && m.addedNodes.length > 0) {
+          debouncedRescan();
+          break;
+        }
+      }
+    });
+    observer.observe(document.documentElement || document.body, { childList: true, subtree: true });
+  }
+
+  debounce(fn, delay) {
+    let t = null;
+    return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn.apply(this, args), delay);
+    };
   }
 
   showAnalysisNotification(data) {

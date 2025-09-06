@@ -14,9 +14,8 @@
   ],
   
   "host_permissions": [
-    "https://www.fiverr.com/*",
-    "https://api.fiverr.com/*",
-    "https://*.fiverr.com/*"
+    "https://*.fiverr.com/*",
+    "https://api.fiverr.com/*"
   ],
   
   "action": {
@@ -30,7 +29,7 @@
   
   "content_scripts": [
     {
-      "matches": ["https://www.fiverr.com/*"],
+      "matches": ["https://*.fiverr.com/*"],
       "js": ["content.js"],
       "css": ["styles.css"],
       "run_at": "document_end"
@@ -40,7 +39,7 @@
   "web_accessible_resources": [
     {
       "resources": ["chart.min.js", "styles.css", "icons/*"],
-      "matches": ["https://www.fiverr.com/*"]
+      "matches": ["https://*.fiverr.com/*"]
     }
   ],
   
