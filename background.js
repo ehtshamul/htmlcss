@@ -34,7 +34,14 @@ class FiverrDataFetcher {
 
                 case 'analyzeKeyword':
                     {
-                        const data = await this.searchKeyword(request.keyword);
+                        let data = await this.searchKeyword(request.keyword);
+                        if (!data || !Array.isArray(data.gigs) || data.gigs.length === 0) {
+                            try {
+                                data = await this.fetchGigData(request.keyword);
+                            } catch (_) {
+                                // keep original data if fallback also fails
+                            }
+                        }
                         sendResponse({ data });
                     }
                     break;
